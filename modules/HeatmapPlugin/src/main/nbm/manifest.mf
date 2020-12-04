@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module-Name: Wojciech Szczyrba
-OpenIDE-Module-Short-Description: Heatmap preview
-OpenIDE-Module-Long-Description: Gephi plugin to make a heatmap out of the graph.
-OpenIDE-Module-Display-Category: Layout
