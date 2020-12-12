@@ -24,6 +24,12 @@ public class HeatmapRenderer implements Renderer {
     public static final String ENABLE_NODE_HEATMAP = "node.heatmap.enable";
     //public float volume = 0;
 
+    //to get a prop, a later a value(color) as it didn't other way
+    PreviewProperty colorProp = null;
+    boolean colorsEnabled = false;
+    Color color;
+    PreviewModel pm;
+
     @Override
     public String getDisplayName() {
         return NbBundle.getMessage(HeatmapRenderer.class, "HeatmapRenderer.name");
@@ -31,6 +37,20 @@ public class HeatmapRenderer implements Renderer {
 
     @Override
     public void preProcess(PreviewModel pm) {
+
+        this.pm = pm;
+        PreviewProperties properties = pm.getProperties();
+        PreviewProperty[] props = properties.getProperties();
+
+        for(PreviewProperty prop : props){
+            if(prop.getName().equals("node.color.enable")){
+                colorsEnabled = prop.getValue();
+            }
+            if(prop.getName().equals("node.color")){
+                colorProp = prop;
+            }
+        }
+
     }
 
     @Override
@@ -53,45 +73,35 @@ public class HeatmapRenderer implements Renderer {
 
         PreviewProperty[] props = properties.getProperties();
 
-
-        //Params
-        Float x = item.getData(NodeItem.X);
-        Float y = item.getData(NodeItem.Y);
-        //Float size = item.getData(NodeItem.SIZE);
-        Color color;
-
-        //to get a prop, a later a value(color) as it didn't other way
-        PreviewProperty colorProp = null;
-        boolean colorsEnabled = false;
-        for(PreviewProperty prop : props){
-            if(prop.getName().equals("node.color.enable")){
-                colorsEnabled = prop.getValue();
-            }
-            if(prop.getName().equals("node.color")){
-                colorProp = prop;
-            }
-        }
-
         if(!colorsEnabled) {
             color = item.getData(NodeItem.COLOR);
         }
         else {
             color = colorProp.getValue();
         }
+
+
+
+        //Params
+        Float x = item.getData(NodeItem.X);
+        Float y = item.getData(NodeItem.Y);
+        //Float size = item.getData(NodeItem.SIZE);
+
         Color startColor = new Color(color.getRed(), color.getGreen(), color.getBlue(),  255);
         Color endColor = new Color(startColor.getRed(), startColor.getGreen(), startColor.getBlue(), 0);
        //volume = size * 6;
         float volume = props[1].getValue();
         //Get Java2D canvas
         Graphics2D g2 = target.getGraphics();
-        RadialGradientPaint p = new RadialGradientPaint(new Point2D.Double(x, y), volume,
-                new float[]{
-                    0.0f, 1.0f},
-                new Color[]{
-                    startColor,
-                    endColor});
-        g2.setPaint(p);
-        g2.fillOval((int) (x - volume), (int) (y - volume), (int) (volume * 2), (int) (volume * 2));
+//        RadialGradientPaint p = new RadialGradientPaint(new Point2D.Double(x, y), volume,
+//                new float[]{
+//                    0.0f, 1.0f},
+//                new Color[]{
+//                    startColor,
+//                    endColor});
+//        g2.setPaint(p);
+//        g2.fillOval((int) (x - volume), (int) (y - volume), (int) (volume * 2), (int) (volume * 2));
+        g2.setComposite(new AdditiveComposite(Color.BLACK));
     }
 
     public void renderPDF(Item item, PDFTarget target, PreviewProperties properties) {
